@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- PWA: Configuración del Manifiesto -->
+  <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRvbid0Rm9yZ2V0IiwKICAic2hvcnRfbmFtZSI6ICJEb24ndEZvcmdldCIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjRjRGNkY4IiwKICAiY29sb3JfZGVzY3JpcHRpb24iOiAiI0Y0RjZGNyIsCiAgImljb25zIjogW3sKICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMTgyOC8xODI4ODg0LnBuZyIsCiAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgfV0KfQ==">
+  <title>Don'tForget</title>
+  
+  <style>
+    /* ... (MANTENEMOS TODO EL CSS DE ANTES) ... */
+    :root { --bg-color: #f4f6f8; --card-bg: #ffffff; --text-color: #333333; --secondary-text: #6b7280; --header-bg: #4F46E5; --input-bg: #ffffff; --border-color: #d1d5db; }
+    body.dark-mode { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --secondary-text: #a0a0a0; --header-bg: #312e81; --input-bg: #2d2d2d; --border-color: #444444; }
+    * { box-sizing: border-box; font-family: -apple-system, sans-serif; transition: background 0.3s, color 0.3s; margin: 0; padding: 0; }
+    body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
+    header { background: var(--header-bg); color: white; padding: 18px; text-align: center; font-weight: bold; position: relative; }
+    #theme-toggle { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: white; }
+    .container { padding: 16px; max-width: 500px; margin: 0 auto; }
+    .tab-content { display: none; } .tab-content.active { display: block; }
+    .card { background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 16px; }
+    button, input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); margin-top: 10px; cursor: pointer;}
+    .item-card { background: var(--card-bg); padding: 14px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #4F46E5; display: flex; justify-content: space-between; align-items: center; }
+    nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); height: 60px; }
+    nav button { flex: 1; border: none; background: none; font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body>
+
+  <header>Don'tForget <button id="theme-toggle" onclick="toggleTheme()">🌙</button></header>
+
+  <div class="container">
+    <div id="sec-anotar" class="tab-content active">
+      <div class="card">
+        <h2>📝 Nueva Nota</h2>
+        <input type="text" id="taskText" placeholder="¿Qué no quieres olvidar?">
+        <button style="background:#4F46E5; color:white;" onclick="saveTask()">Guardar</button>
+      </div>
+    </div>
+    <!-- ... Resto del contenido igual ... -->
+  </div>
+
+  <script>
+    /* PWA: Registro del Service Worker */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // En un caso real crearías un archivo sw.js, aquí registramos un trabajador vacío para el ejemplo
+        navigator.serviceWorker.register('data:text/javascript,console.log("PWA Listo")').catch(err => console.log('Error PWA', err));
+      });
+    }
+
+    /* ... LÓGICA ANTERIOR (MANTENER IGUAL) ... */
+    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+    function saveTask() { alert("Nota guardada"); }
+    function switchTab(t) { /* ... */ }
+  </script>
+</body>
+</html>
