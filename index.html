@@ -3,55 +3,273 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- PWA: Configuración del Manifiesto -->
   <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRvbid0Rm9yZ2V0IiwKICAic2hvcnRfbmFtZSI6ICJEb24ndEZvcmdldCIsCiAgInN0YXJ0X3VybCI6ICIvIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjRjRGNkY4IiwKICAiY29sb3JfZGVzY3JpcHRpb24iOiAiI0Y0RjZGNyIsCiAgImljb25zIjogW3sKICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMTgyOC8xODI4ODg0LnBuZyIsCiAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgfV0KfQ==">
   <title>Don'tForget</title>
-  
   <style>
-    /* ... (MANTENEMOS TODO EL CSS DE ANTES) ... */
-    :root { --bg-color: #f4f6f8; --card-bg: #ffffff; --text-color: #333333; --secondary-text: #6b7280; --header-bg: #4F46E5; --input-bg: #ffffff; --border-color: #d1d5db; }
-    body.dark-mode { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --secondary-text: #a0a0a0; --header-bg: #312e81; --input-bg: #2d2d2d; --border-color: #444444; }
-    * { box-sizing: border-box; font-family: -apple-system, sans-serif; transition: background 0.3s, color 0.3s; margin: 0; padding: 0; }
+    :root {
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --secondary-text: #6b7280;
+      --header-bg: #4F46E5;
+      --input-bg: #ffffff;
+      --border-color: #d1d5db;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #e0e0e0;
+      --secondary-text: #a0a0a0;
+      --header-bg: #312e81;
+      --input-bg: #2d2d2d;
+      --border-color: #444444;
+    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; transition: background 0.3s, color 0.3s; margin: 0; padding: 0; }
     body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
-    header { background: var(--header-bg); color: white; padding: 18px; text-align: center; font-weight: bold; position: relative; }
-    #theme-toggle { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: white; }
+    
+    header { background: var(--header-bg); color: white; padding: 18px; text-align: center; font-size: 20px; font-weight: bold; position: relative; }
+    #theme-toggle { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: white; width: auto; margin: 0; padding: 0; }
+    
     .container { padding: 16px; max-width: 500px; margin: 0 auto; }
-    .tab-content { display: none; } .tab-content.active { display: block; }
-    .card { background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 16px; }
-    button, input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); margin-top: 10px; cursor: pointer;}
-    .item-card { background: var(--card-bg); padding: 14px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #4F46E5; display: flex; justify-content: space-between; align-items: center; }
-    nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); height: 60px; }
-    nav button { flex: 1; border: none; background: none; font-size: 11px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    .card { background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 16px; text-align: left; }
+    label { font-size: 14px; font-weight: 600; color: var(--text-color); display: block; margin-top: 12px; margin-bottom: 4px; }
+    input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 15px; background: var(--input-bg); color: var(--text-color); }
+    
+    .btn-primary { background: #4F46E5; color: white; border: none; font-weight: bold; margin-top: 18px; cursor: pointer; }
+    .btn-support { background: #ec4899; color: white; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; padding: 15px; }
+
+    .item-card { background: var(--card-bg); padding: 14px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-left: 5px solid #4F46E5; display: flex; justify-content: space-between; align-items: center; }
+    .item-card.completed { border-left-color: #10B981; opacity: 0.7; }
+    
+    .action-btns { display: flex; gap: 6px; }
+    .btn-icon { width: 36px; height: 36px; border: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; margin: 0; }
+    .btn-done { background: #e0e7ff; color: #4338ca; }
+    .btn-delete { background: #fee2e2; color: #dc2626; }
+    
+    nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); height: 60px; z-index: 100; }
+    nav button { flex: 1; border: none; background: none; font-size: 11px; color: var(--secondary-text); font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; border-radius: 0; }
+    nav button.active { color: #4F46E5; }
   </style>
 </head>
 <body>
 
-  <header>Don'tForget <button id="theme-toggle" onclick="toggleTheme()">🌙</button></header>
+  <header>
+    Don'tForget
+    <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+  </header>
 
   <div class="container">
+    <!-- PANTALLA 1: ANOTAR -->
     <div id="sec-anotar" class="tab-content active">
       <div class="card">
         <h2>📝 Nueva Nota</h2>
-        <input type="text" id="taskText" placeholder="¿Qué no quieres olvidar?">
-        <button style="background:#4F46E5; color:white;" onclick="saveTask()">Guardar</button>
+        <label>¿Qué no quieres olvidar?</label>
+        <input type="text" id="taskText" placeholder="Ej. Pintar las sillas...">
+        
+        <label>¿Cómo quieres que te recordemos?</label>
+        <select id="triggerType" onchange="toggleInputs()">
+          <option value="hora">⏰ Solo por Hora / Fecha</option>
+          <option value="ubicacion">📍 Por Ubicación Guardada</option>
+        </select>
+        
+        <div id="group-time">
+          <label>Fecha y Hora:</label>
+          <input type="datetime-local" id="taskTime">
+        </div>
+        
+        <div id="group-location" style="display:none;">
+          <label>Lugar:</label>
+          <select id="selectLocation"></select>
+          <label>¿Cuándo?</label>
+          <select id="locCondition">
+            <option value="llegar">🎯 Al Llegar</option>
+            <option value="salir">🚪 Al Salir</option>
+          </select>
+        </div>
+        
+        <button class="btn-primary" onclick="saveTask()">¡Guardar y Recordar!</button>
       </div>
     </div>
-    <!-- ... Resto del contenido igual ... -->
+
+    <!-- PANTALLA 2: MIS NOTAS -->
+    <div id="sec-notas" class="tab-content">
+      <h2 style="margin-bottom:12px;">📋 Mis Recordatorios</h2>
+      <div id="notesContainer"></div>
+    </div>
+
+    <!-- PANTALLA 3: LUGARES -->
+    <div id="sec-lugares" class="tab-content">
+      <div class="card">
+        <h2>📍 Guardar Nuevo Lugar</h2>
+        <input type="text" id="locNameInput" placeholder="Nombre del lugar (ej. Casa)">
+        <select id="locRadiusInput" style="margin-top:10px;">
+          <option value="50" selected>50 metros (Recomendado)</option>
+          <option value="20">20 metros</option>
+          <option value="100">100 metros</option>
+        </select>
+        <button class="btn-primary" style="background:#10B981;" onclick="addCurrentLocation()">📍 Guardar Ubicación Actual</button>
+      </div>
+      <div id="placesContainer"></div>
+    </div>
+
+    <!-- PANTALLA 4: APOYA -->
+    <div id="sec-apoya" class="tab-content">
+      <div class="card" style="text-align: center;">
+        <h2>❤️ Apoya Don'tForget</h2>
+        <p style="color:var(--secondary-text); margin: 15px 0;">Esta app es y será gratuita. Si te gusta, puedes ayudarme viendo un anuncio corto. ¡Gracias por el apoyo!</p>
+        <button class="btn-support" onclick="showRewardedAd()">Ver video y apoyar (30s)</button>
+      </div>
+    </div>
   </div>
 
+  <nav>
+    <button id="btn-tab-anotar" class="active" onclick="switchTab('anotar')">📝 Anotar</button>
+    <button id="btn-tab-notas" onclick="switchTab('notas')">📋 Notas</button>
+    <button id="btn-tab-lugares" onclick="switchTab('lugares')">📍 Lugares</button>
+    <button id="btn-tab-apoya" onclick="switchTab('apoya')">❤️ Apoya</button>
+  </nav>
+
   <script>
-    /* PWA: Registro del Service Worker */
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        // En un caso real crearías un archivo sw.js, aquí registramos un trabajador vacío para el ejemplo
         navigator.serviceWorker.register('data:text/javascript,console.log("PWA Listo")').catch(err => console.log('Error PWA', err));
       });
     }
 
-    /* ... LÓGICA ANTERIOR (MANTENER IGUAL) ... */
-    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-    function saveTask() { alert("Nota guardada"); }
-    function switchTab(t) { /* ... */ }
+    const isDark = localStorage.getItem('theme') === 'dark';
+    if(isDark) document.body.classList.add('dark-mode');
+    document.getElementById('theme-toggle').innerText = isDark ? '☀️' : '🌙';
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      document.getElementById('theme-toggle').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    }
+
+    let tasks = JSON.parse(localStorage.getItem('df_tasks')) || [];
+    let places = JSON.parse(localStorage.getItem('df_places')) || [];
+
+    function toggleInputs() {
+      const type = document.getElementById('triggerType').value;
+      document.getElementById('group-time').style.display = type === 'hora' ? 'block' : 'none';
+      document.getElementById('group-location').style.display = type === 'ubicacion' ? 'block' : 'none';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+      document.getElementById(`sec-${tab}`).classList.add('active');
+      document.getElementById(`btn-tab-${tab}`).classList.add('active');
+      if(tab === 'notas') renderTasks();
+      if(tab === 'lugares') renderPlaces();
+      if(tab === 'anotar') updateLocationDropdown();
+    }
+
+    function showRewardedAd() {
+      alert("Cargando anuncio para apoyar el proyecto...");
+      setTimeout(() => {
+        alert("¡Muchas gracias por ver el anuncio y apoyar a Don'tForget! 💖");
+      }, 1000);
+    }
+
+    function addCurrentLocation() {
+      const name = document.getElementById('locNameInput').value.trim();
+      const radius = parseInt(document.getElementById('locRadiusInput').value);
+      if(!name) return alert("Ponle un nombre al lugar.");
+      navigator.geolocation.getCurrentPosition(pos => {
+        places.push({ id: Date.now(), name, radius, lat: pos.coords.latitude, lng: pos.coords.longitude });
+        localStorage.setItem('df_places', JSON.stringify(places));
+        alert("Lugar guardado.");
+        document.getElementById('locNameInput').value = '';
+        renderPlaces();
+      }, () => alert("Activa la ubicación/GPS para guardar este lugar."));
+    }
+
+    function renderPlaces() {
+      const container = document.getElementById('placesContainer');
+      container.innerHTML = places.length === 0 ? '<p style="color:var(--secondary-text); text-align:center;">No hay lugares guardados.</p>' : places.map(p => `
+        <div class="item-card">
+          <div><strong>📍 ${p.name}</strong><br><small style="color:var(--secondary-text);">${p.radius}m de radio</small></div>
+          <button class="btn-icon btn-delete" onclick="deletePlace(${p.id})">🗑️</button>
+        </div>`).join('');
+    }
+
+    function deletePlace(id) {
+      places = places.filter(p => p.id !== id);
+      localStorage.setItem('df_places', JSON.stringify(places));
+      renderPlaces();
+    }
+
+    function updateLocationDropdown() {
+      const select = document.getElementById('selectLocation');
+      if(places.length === 0) {
+        select.innerHTML = '<option value="">Primero guarda un lugar en la pestaña "Lugares"</option>';
+      } else {
+        select.innerHTML = places.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      }
+    }
+
+    function saveTask() {
+      const text = document.getElementById('taskText').value.trim();
+      if(!text) return alert("Por favor escribe una nota.");
+      const type = document.getElementById('triggerType').value;
+      
+      let selectedPlace = null;
+      if(type === 'ubicacion') {
+        const placeId = document.getElementById('selectLocation').value;
+        if(!placeId) return alert("Debes seleccionar o guardar un lugar primero.");
+        selectedPlace = places.find(p => p.id == placeId);
+      }
+
+      tasks.push({ 
+        id: Date.now(), 
+        text, 
+        type, 
+        time: document.getElementById('taskTime').value, 
+        place: selectedPlace,
+        condition: document.getElementById('locCondition').value,
+        completed: false 
+      });
+      
+      localStorage.setItem('df_tasks', JSON.stringify(tasks));
+      document.getElementById('taskText').value = '';
+      alert("¡Nota guardada!");
+      switchTab('notas');
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('notesContainer');
+      container.innerHTML = tasks.length === 0 ? '<p style="color:var(--secondary-text); text-align:center;">No tienes recordatorios pendientes.</p>' : tasks.map(t => `
+        <div class="item-card ${t.completed ? 'completed' : ''}">
+          <div>
+            <strong>${t.text}</strong><br>
+            <small style="color:var(--secondary-text);">${t.type === 'hora' ? '⏰ ' + (t.time || 'Sin hora') : '📍 ' + (t.place ? t.place.name : 'Lugar') + ' (' + t.condition + ')'}</small>
+          </div>
+          <div class="action-btns">
+            <button class="btn-icon btn-done" onclick="toggleComplete(${t.id})">✓</button>
+            <button class="btn-icon btn-delete" onclick="deleteTask(${t.id})">🗑️</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function toggleComplete(id) {
+      tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+      localStorage.setItem('df_tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      localStorage.setItem('df_tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    updateLocationDropdown();
   </script>
 </body>
 </html>
