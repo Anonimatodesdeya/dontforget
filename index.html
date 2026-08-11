@@ -170,10 +170,13 @@
     }
 
     function finishTutorial() {
-      // Pedir permisos explícitamente al finalizar
       if ("Notification" in window) Notification.requestPermission();
-      if ("geolocation" in navigator) navigator.geolocation.getCurrentPosition(() => {}, () => {});
-      
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          () => showToast("📍 Ubicación permitida"),
+          () => showToast("⚠️ Permite la ubicación para alarmas de lugar")
+        );
+      }
       localStorage.setItem('tutorialSeen', 'true');
       document.getElementById('tutorial-overlay').style.display = 'none';
     }
@@ -198,12 +201,34 @@
     let tasks = JSON.parse(localStorage.getItem('df_tasks')) || [];
     let places = JSON.parse(localStorage.getItem('df_places')) || [];
 
-    // MOTOR DE ALERTAS
+    // REPRODUCTOR DE SONIDO DE ALARMA SINTETIZADO
+    function playAlarmSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // Tono A5
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1); // Suena 1 segundo
+      } catch (e) { console.log(e); }
+    }
+
+    // MOTOR DE MONITORIZACIÓN CADA 5 SEGUNDOS
     setInterval(() => {
       const now = new Date();
       tasks.forEach(t => {
         if(t.completed) return;
-        if(t.type === 'hora' && t.time && now >= new Date(t.time)) triggerAlarm(t);
+
+        // Comparación flexible de tiempo (si la fecha/hora ya pasó o es la actual)
+        if(t.type === 'hora' && t.time) {
+          const taskTime = new Date(t.time);
+          if(now >= taskTime) triggerAlarm(t);
+        }
+
         if(t.type === 'ubicacion' && t.place) {
           navigator.geolocation.getCurrentPosition(pos => {
             const dist = getDistance(pos.coords.latitude, pos.coords.longitude, t.place.lat, t.place.lng);
@@ -211,13 +236,14 @@
           });
         }
       });
-    }, 15000);
+    }, 5000);
 
     function triggerAlarm(task) {
+      playAlarmSound();
       if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("Don'tForget", { body: task.text });
+        new Notification("Don'tForget 🔔", { body: task.text, icon: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" });
       }
-      showToast("🔔 Recordatorio: " + task.text);
+      showToast("🔔 RECORDATORIO: " + task.text);
       task.completed = true;
       localStorage.setItem('df_tasks', JSON.stringify(tasks));
       renderTasks();
