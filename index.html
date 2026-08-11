@@ -54,6 +54,33 @@
     nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); height: 60px; z-index: 100; }
     nav button { flex: 1; border: none; background: none; font-size: 11px; color: var(--secondary-text); font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; border-radius: 0; }
     nav button.active { color: #4F46E5; }
+
+    /* ESTILO PARA NOTIFICACIONES FLOTANTES ELEGANTES (TOAST) */
+    #toast {
+      visibility: hidden;
+      min-width: 220px;
+      background-color: #1f2937;
+      color: #fff;
+      text-align: center;
+      border-radius: 25px;
+      padding: 12px 20px;
+      position: fixed;
+      z-index: 1000;
+      left: 50%;
+      bottom: 75px;
+      transform: translateX(-50%);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s;
+    }
+
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 85px;
+    }
   </style>
 </head>
 <body>
@@ -127,6 +154,9 @@
     </div>
   </div>
 
+  <!-- ELEMENTO PARA EL TOAST -->
+  <div id="toast"></div>
+
   <nav>
     <button id="btn-tab-anotar" class="active" onclick="switchTab('anotar')">📝 Anotar</button>
     <button id="btn-tab-notas" onclick="switchTab('notas')">📋 Notas</button>
@@ -138,6 +168,13 @@
     const isDark = localStorage.getItem('theme') === 'dark';
     if(isDark) document.body.classList.add('dark-mode');
     document.getElementById('theme-toggle').innerText = isDark ? '☀️' : '🌙';
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.className = "show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
+    }
 
     function toggleTheme() {
       document.body.classList.toggle('dark-mode');
@@ -165,23 +202,23 @@
     }
 
     function showRewardedAd() {
-      alert("Cargando anuncio para apoyar el proyecto...");
+      showToast("Cargando anuncio...");
       setTimeout(() => {
-        alert("¡Muchas gracias por ver el anuncio y apoyar a Don'tForget! 💖");
-      }, 1000);
+        showToast("¡Gracias por apoyar a Don'tForget! 💖");
+      }, 1500);
     }
 
     function addCurrentLocation() {
       const name = document.getElementById('locNameInput').value.trim();
       const radius = parseInt(document.getElementById('locRadiusInput').value);
-      if(!name) return alert("Ponle un nombre al lugar.");
+      if(!name) return showToast("⚠️ Escribe un nombre para el lugar");
       navigator.geolocation.getCurrentPosition(pos => {
         places.push({ id: Date.now(), name, radius, lat: pos.coords.latitude, lng: pos.coords.longitude });
         localStorage.setItem('df_places', JSON.stringify(places));
-        alert("Lugar guardado.");
+        showToast("📍 ¡Lugar guardado con éxito!");
         document.getElementById('locNameInput').value = '';
         renderPlaces();
-      }, () => alert("Activa la ubicación/GPS para guardar este lugar."));
+      }, () => showToast("⚠️ Activa tu GPS para guardar la ubicación"));
     }
 
     function renderPlaces() {
@@ -196,13 +233,14 @@
     function deletePlace(id) {
       places = places.filter(p => p.id !== id);
       localStorage.setItem('df_places', JSON.stringify(places));
+      showToast("Lugar eliminado");
       renderPlaces();
     }
 
     function updateLocationDropdown() {
       const select = document.getElementById('selectLocation');
       if(places.length === 0) {
-        select.innerHTML = '<option value="">Primero guarda un lugar en la pestaña "Lugares"</option>';
+        select.innerHTML = '<option value="">Primero guarda un lugar en "Lugares"</option>';
       } else {
         select.innerHTML = places.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
       }
@@ -210,13 +248,13 @@
 
     function saveTask() {
       const text = document.getElementById('taskText').value.trim();
-      if(!text) return alert("Por favor escribe una nota.");
+      if(!text) return showToast("⚠️ Escribe una nota primero");
       const type = document.getElementById('triggerType').value;
       
       let selectedPlace = null;
       if(type === 'ubicacion') {
         const placeId = document.getElementById('selectLocation').value;
-        if(!placeId) return alert("Debes seleccionar o guardar un lugar primero.");
+        if(!placeId) return showToast("⚠️ Guarda un lugar primero");
         selectedPlace = places.find(p => p.id == placeId);
       }
 
@@ -232,7 +270,7 @@
       
       localStorage.setItem('df_tasks', JSON.stringify(tasks));
       document.getElementById('taskText').value = '';
-      alert("¡Nota guardada!");
+      showToast("✨ ¡Nota guardada!");
       switchTab('notas');
     }
 
@@ -260,6 +298,7 @@
     function deleteTask(id) {
       tasks = tasks.filter(t => t.id !== id);
       localStorage.setItem('df_tasks', JSON.stringify(tasks));
+      showToast("Nota eliminada");
       renderTasks();
     }
 
