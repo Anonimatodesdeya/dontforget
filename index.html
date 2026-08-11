@@ -5,29 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRvbid0Rm9yZ2V0IiwKICAic2hvcnRfbmFtZSI6ICJEb24ndEZvcmdldCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjRjRGNkY4IiwKICAidGhlbWVfY29sb3IiOiAiIzRGNDZFNSIsCiAgImljb25zIjogW3sKICAgICJzcmMiOiAiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMTgyOC8xODI4ODg0LnBuZyIsCiAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgfV0KfQ==">
   <title>Don'tForget</title>
-  <!-- [Estilos iguales, se mantienen igual para ahorrar espacio] -->
   <style>
     :root { --bg-color: #f4f6f8; --card-bg: #ffffff; --text-color: #1f2937; --secondary-text: #6b7280; --header-bg: #4F46E5; --input-bg: #ffffff; --border-color: #d1d5db; }
     body.dark-mode { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #e0e0e0; --secondary-text: #a0a0a0; --header-bg: #312e81; --input-bg: #2d2d2d; --border-color: #444444; }
     * { box-sizing: border-box; font-family: sans-serif; transition: background 0.3s, color 0.3s; margin: 0; padding: 0; }
     body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
-    header { background: var(--header-bg); color: white; padding: 18px; text-align: center; font-weight: bold; }
+    header { background: var(--header-bg); color: white; padding: 18px; text-align: center; font-size: 20px; font-weight: bold; position: relative; }
+    #theme-toggle { position: absolute; right: 15px; top: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: white; }
     .container { padding: 16px; max-width: 500px; margin: 0 auto; }
     .tab-content { display: none; } .tab-content.active { display: block; }
     .card { background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 16px; }
-    input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 5px; }
-    .btn-primary { background: #4F46E5; color: white; border: none; cursor: pointer; }
+    input, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-color); margin-top: 5px; }
+    .btn-primary { background: #4F46E5; color: white; border: none; font-weight: bold; margin-top: 18px; cursor: pointer; }
     .item-card { background: var(--card-bg); padding: 14px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #4F46E5; display: flex; justify-content: space-between; align-items: center; }
+    .item-card.completed { border-left-color: #10B981; opacity: 0.7; }
     nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); height: 60px; z-index: 100; }
     nav button { flex: 1; border: none; background: none; font-size: 11px; color: var(--secondary-text); font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     nav button.active { color: #4F46E5; }
-    #toast { visibility: hidden; background-color: #1f2937; color: #fff; text-align: center; border-radius: 25px; padding: 12px; position: fixed; z-index: 1000; left: 50%; bottom: 85px; transform: translateX(-50%); }
+    
+    #tutorial-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+    .slide { display: none; } .slide.active { display: block; }
+    
+    #toast { visibility: hidden; background-color: #1f2937; color: #fff; text-align: center; border-radius: 25px; padding: 12px 20px; position: fixed; z-index: 1000; left: 50%; bottom: 85px; transform: translateX(-50%); }
     #toast.show { visibility: visible; }
   </style>
 </head>
 <body>
 
-  <header>Don'tForget</header>
+  <!-- TUTORIAL -->
+  <div id="tutorial-overlay">
+    <div id="slide1" class="slide active">
+      <h2>¡Bienvenido!</h2>
+      <p>Anota cosas y recibe avisos por hora o cuando llegues a un lugar.</p>
+      <button class="btn-primary" onclick="nextSlide()">Siguiente</button>
+    </div>
+    <div id="slide2" class="slide">
+      <h2>Permisos necesarios</h2>
+      <p>Para avisarte, necesitamos que aceptes las notificaciones y ubicación al iniciar.</p>
+      <button class="btn-primary" onclick="requestInitialPermissions()">Aceptar y Empezar</button>
+    </div>
+  </div>
+
+  <header>
+    Don'tForget
+    <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
+  </header>
 
   <div class="container">
     <div id="sec-anotar" class="tab-content active">
@@ -42,72 +64,75 @@
         <div id="group-location" style="display:none;"><select id="selectLocation"></select></div>
         <button class="btn-primary" onclick="saveTask()">Guardar</button>
       </div>
-      <!-- Botón para activar notificaciones -->
-      <button onclick="requestNotificationPermission()" style="background: #e0e7ff; color:#4338ca; border:none; margin-top:10px;">🔔 Activar notificaciones</button>
     </div>
 
     <div id="sec-notas" class="tab-content">
-        <h2>📋 Mis Recordatorios</h2>
-        <div id="notesContainer"></div>
+      <h2>📋 Mis Recordatorios</h2>
+      <div id="notesContainer"></div>
     </div>
 
     <div id="sec-lugares" class="tab-content">
-        <div class="card">
-            <h2>📍 Guardar Lugar</h2>
-            <input type="text" id="locNameInput" placeholder="Nombre (ej. Casa)">
-            <button class="btn-primary" onclick="addCurrentLocation()">Guardar Ubicación</button>
-        </div>
-        <div id="placesContainer"></div>
+      <div class="card">
+        <h2>📍 Guardar Lugar</h2>
+        <input type="text" id="locNameInput" placeholder="Nombre (ej. Casa)">
+        <button class="btn-primary" style="background:#10B981;" onclick="addCurrentLocation()">Guardar Ubicación</button>
+      </div>
+      <div id="placesContainer"></div>
     </div>
   </div>
 
   <div id="toast"></div>
 
   <nav>
-    <button onclick="switchTab('anotar')">📝</button>
-    <button onclick="switchTab('notas')">📋</button>
-    <button onclick="switchTab('lugares')">📍</button>
+    <button id="btn-tab-anotar" class="active" onclick="switchTab('anotar')">📝 Anotar</button>
+    <button id="btn-tab-notas" onclick="switchTab('notas')">📋 Notas</button>
+    <button id="btn-tab-lugares" onclick="switchTab('lugares')">📍 Lugares</button>
   </nav>
 
   <script>
-    // 1. Permisos
-    function requestNotificationPermission() {
-      Notification.requestPermission().then(permission => {
-        if(permission === 'granted') showToast("✅ Notificaciones activadas");
-      });
+    // --- ESTADO Y DATOS ---
+    let tasks = JSON.parse(localStorage.getItem('df_tasks')) || [];
+    let places = JSON.parse(localStorage.getItem('df_places')) || [];
+
+    // --- NOTIFICACIONES Y PERMISOS ---
+    function requestInitialPermissions() {
+      Notification.requestPermission();
+      navigator.geolocation.getCurrentPosition(() => {}, () => {});
+      localStorage.setItem('tutorialSeen', 'true');
+      document.getElementById('tutorial-overlay').style.display = 'none';
     }
 
-    // 2. Motor de chequeo (Corre cada 10s)
+    // --- MOTOR DE MONITOREO (REVISA CADA 15 SEG) ---
     setInterval(() => {
       const now = new Date();
       tasks.forEach(t => {
         if(t.completed) return;
 
-        // Chequeo por hora
+        // 1. Check por Hora
         if(t.type === 'hora' && t.time) {
-          const taskDate = new Date(t.time);
-          if(now >= taskDate) triggerAlert(t);
+          if(now >= new Date(t.time)) triggerNotification(t);
         }
 
-        // Chequeo por ubicación
+        // 2. Check por Ubicación
         if(t.type === 'ubicacion' && t.place) {
           navigator.geolocation.getCurrentPosition(pos => {
             const dist = getDistance(pos.coords.latitude, pos.coords.longitude, t.place.lat, t.place.lng);
-            if(dist <= t.place.radius) triggerAlert(t);
+            if(dist <= (t.place.radius || 50)) triggerNotification(t);
           });
         }
       });
-    }, 10000);
+    }, 15000);
 
-    function triggerAlert(task) {
-      new Notification("Don'tForget", { body: task.text });
+    function triggerNotification(task) {
+      if (Notification.permission === "granted") {
+        new Notification("Don'tForget", { body: task.text });
+      }
       showToast("🔔 Recordatorio: " + task.text);
-      task.completed = true; // Marcamos como completado para no repetir
+      task.completed = true;
       localStorage.setItem('df_tasks', JSON.stringify(tasks));
       renderTasks();
     }
 
-    // 3. Fórmula matemática para distancia (Haversine)
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const dLat = (lat2-lat1) * Math.PI/180;
@@ -116,14 +141,80 @@
       return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    // ... [Mantener el resto de tus funciones: switchTab, saveTask, renderTasks, etc.] ...
-    // Asegúrate de copiar las funciones de gestión de tareas que ya tenías.
-    
+    // --- FUNCIONES UI ---
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+      document.getElementById(`sec-${tab}`).classList.add('active');
+      document.getElementById(`btn-tab-${tab}`).classList.add('active');
+      if(tab === 'notas') renderTasks();
+    }
+
+    function toggleInputs() {
+      const type = document.getElementById('triggerType').value;
+      document.getElementById('group-time').style.display = type === 'hora' ? 'block' : 'none';
+      document.getElementById('group-location').style.display = type === 'ubicacion' ? 'block' : 'none';
+    }
+
+    function saveTask() {
+      const text = document.getElementById('taskText').value;
+      const type = document.getElementById('triggerType').value;
+      let selectedPlace = null;
+      if(type === 'ubicacion') {
+        const placeId = document.getElementById('selectLocation').value;
+        selectedPlace = places.find(p => p.id == placeId);
+      }
+      tasks.push({ id: Date.now(), text, type, time: document.getElementById('taskTime').value, place: selectedPlace, completed: false });
+      localStorage.setItem('df_tasks', JSON.stringify(tasks));
+      showToast("✨ Nota guardada");
+      switchTab('notas');
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('notesContainer');
+      container.innerHTML = tasks.map(t => `
+        <div class="item-card ${t.completed ? 'completed' : ''}">
+          <div><strong>${t.text}</strong><br><small>${t.type}</small></div>
+          <button onclick="deleteTask(${t.id})">🗑️</button>
+        </div>`).join('');
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      localStorage.setItem('df_tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function addCurrentLocation() {
+        navigator.geolocation.getCurrentPosition(pos => {
+            places.push({ id: Date.now(), name: document.getElementById('locNameInput').value, lat: pos.coords.latitude, lng: pos.coords.longitude });
+            localStorage.setItem('df_places', JSON.stringify(places));
+            showToast("📍 Ubicación guardada");
+            updateLocationDropdown();
+        });
+    }
+
+    function updateLocationDropdown() {
+      document.getElementById('selectLocation').innerHTML = places.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
     function showToast(msg) {
         const toast = document.getElementById("toast");
         toast.innerText = msg; toast.className = "show";
         setTimeout(() => { toast.className = ""; }, 3000);
     }
+
+    function nextSlide() {
+        document.getElementById('slide1').classList.remove('active');
+        document.getElementById('slide2').classList.add('active');
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+
+    if (localStorage.getItem('tutorialSeen')) document.getElementById('tutorial-overlay').style.display = 'none';
+    updateLocationDropdown();
   </script>
 </body>
 </html>
