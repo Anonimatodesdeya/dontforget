@@ -55,7 +55,6 @@
     nav button { flex: 1; border: none; background: none; font-size: 11px; color: var(--secondary-text); font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; border-radius: 0; }
     nav button.active { color: #4F46E5; }
 
-    /* ESTILO PARA NOTIFICACIONES FLOTANTES ELEGANTES (TOAST) */
     #toast {
       visibility: hidden;
       min-width: 220px;
@@ -112,11 +111,6 @@
         <div id="group-location" style="display:none;">
           <label>Lugar:</label>
           <select id="selectLocation"></select>
-          <label>¿Cuándo?</label>
-          <select id="locCondition">
-            <option value="llegar">🎯 Al Llegar</option>
-            <option value="salir">🚪 Al Salir</option>
-          </select>
         </div>
         
         <button class="btn-primary" onclick="saveTask()">¡Guardar y Recordar!</button>
@@ -154,7 +148,6 @@
     </div>
   </div>
 
-  <!-- ELEMENTO PARA EL TOAST -->
   <div id="toast"></div>
 
   <nav>
@@ -264,7 +257,6 @@
         type, 
         time: document.getElementById('taskTime').value, 
         place: selectedPlace,
-        condition: document.getElementById('locCondition').value,
         completed: false 
       });
       
@@ -280,7 +272,7 @@
         <div class="item-card ${t.completed ? 'completed' : ''}">
           <div>
             <strong>${t.text}</strong><br>
-            <small style="color:var(--secondary-text);">${t.type === 'hora' ? '⏰ ' + (t.time || 'Sin hora') : '📍 ' + (t.place ? t.place.name : 'Lugar') + ' (' + t.condition + ')'}</small>
+            <small style="color:var(--secondary-text);">${t.type === 'hora' ? '⏰ ' + (t.time || 'Sin hora') : '📍 ' + (t.place ? t.place.name : 'Lugar')}</small>
           </div>
           <div class="action-btns">
             <button class="btn-icon btn-done" onclick="toggleComplete(${t.id})">✓</button>
